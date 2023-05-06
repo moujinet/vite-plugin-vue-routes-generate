@@ -1,0 +1,12 @@
+.cache
+.DS_Store
+.vite-inspect
+.idea
+*.local
+*.log
+*.tgz
+coverage
+dist
+dist-ssr
+logs
+node_modules
