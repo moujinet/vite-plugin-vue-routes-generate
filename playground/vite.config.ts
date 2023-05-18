@@ -1,8 +1,11 @@
 import { defineConfig } from 'vite'
 import Vue from '@vitejs/plugin-vue'
-import Plugin from '[name]'
+import VueRoutesGenerate from 'vite-plugin-vue-routes-generate'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [Vue(), Plugin()]
+  plugins: [
+    Vue(),
+    VueRoutesGenerate(),
+  ],
 })

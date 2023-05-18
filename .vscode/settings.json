@@ -1,9 +1,12 @@
 {
-  "cSpell.words": ["antfu", "bumpp", "mouji", "pluginutils", "tsup"],
-  "typescript.tsdk": "node_modules/typescript/lib",
   "prettier.enable": false,
   "editor.formatOnSave": false,
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
-  }
+  },
+  "cSpell.words": [
+    "bumpp",
+    "mouji",
+    "tsup"
+  ]
 }

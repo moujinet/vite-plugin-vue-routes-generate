@@ -1,61 +1,87 @@
 {
-  "name": "[name]",
+  "name": "vite-plugin-vue-routes-generate",
   "version": "0.0.0",
-  "description": "vite-plugin-[name]",
+  "packageManager": "pnpm@8.5.1",
+  "description": "A Vite plugin for generate Vue-Router routes based on filesystem, complete with router-based layout system.",
   "author": "Allen Luo <luoyi@mouji.net>",
   "license": "MIT",
-  "homepage": "https://github.com/moujinet/[name]#readme",
+  "homepage": "https://github.com/moujinet/vite-plugin-vue-routes-generate#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/moujinet/[name].git"
+    "url": "git+https://github.com/moujinet/vite-plugin-vue-routes-generate.git"
   },
   "bugs": {
-    "url": "https://github.com/moujinet/[name]/issues"
+    "url": "https://github.com/moujinet/vite-plugin-vue-routes-generate/issues"
   },
   "keywords": [
     "vite",
-    "plugin",
-    "vite-plugin"
+    "vue",
+    "vue-router",
+    "layout system",
+    "routes generate",
+    "filesystem-based",
+    "router-based"
   ],
-  "sideEffects": false,
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "require": "./dist/index.js",
       "import": "./dist/index.mjs"
+    },
+    "./client": {
+      "types": "./client.d.ts"
     }
   },
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "client.d.ts",
+    "LICENSE"
   ],
   "scripts": {
-    "build": "tsup src/index.ts --dts --format cjs,esm",
-    "dev": "tsup src/index.ts --dts --watch",
-    "play": "pnpm run --filter ./playground dev",
+    "build": "tsup src/index.ts --dts",
+    "dev": "pnpm run build --watch",
+    "play": "pnpm run dev & pnpm run --filter ./playground dev",
     "prepublishOnly": "pnpm run build",
     "test": "vitest",
     "release": "bumpp --commit --push --tag && pnpm publish",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "up": "taze major -I",
+    "postinstall": "npx simple-git-hooks"
+  },
+  "peerDependencies": {
+    "@vue/compiler-sfc": "^2.7.0 || ^3.0.0",
+    "vite": "^2.0.0 || ^3.0.0-0 || ^4.0.0"
   },
   "dependencies": {
-    "@rollup/pluginutils": "^5.0.2",
-    "vite": "^4.2.1"
+    "debug": "^4.3.4",
+    "deep-equal": "^2.2.1",
+    "fast-glob": "^3.2.12",
+    "json5": "^2.2.3",
+    "local-pkg": "^0.4.3",
+    "picocolors": "^1.0.0",
+    "yaml": "^2.2.2"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^0.38.4",
-    "@types/node": "^18.15.11",
+    "@antfu/utils": "^0.7.2",
+    "@mouji/eslint-config": "^0.0.6",
+    "@types/debug": "^4.1.7",
+    "@types/deep-equal": "^1.0.1",
+    "@types/node": "^20.2.0",
+    "@vue/compiler-sfc": "^3.3.3",
     "bumpp": "^9.1.0",
-    "eslint": "^8.38.0",
-    "lint-staged": "^13.2.1",
-    "pnpm": "^8.2.0",
+    "eslint": "^8.40.0",
+    "lint-staged": "^13.2.2",
+    "pnpm": "^8.5.1",
     "simple-git-hooks": "^2.8.1",
+    "taze": "^0.10.1",
     "tsup": "^6.7.0",
-    "typescript": "^4.9.5",
-    "vitest": "^0.30.1"
+    "typescript": "^5.0.4",
+    "vite": "^4.3.7",
+    "vitest": "^0.31.1"
   },
   "simple-git-hooks": {
     "pre-commit": "pnpm lint-staged"
