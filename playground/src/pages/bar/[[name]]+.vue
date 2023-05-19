@@ -1,6 +1,10 @@
+<script lang="ts" setup>
+defineProps<{ name?: string }>()
+</script>
+
 <template>
   <div>
-    This is A Index Page
+    This is A {{ name }} Page
   </div>
 </template>
 

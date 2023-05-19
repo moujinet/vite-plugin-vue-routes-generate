@@ -1,6 +1,6 @@
 import type { Logger, ModuleNode, ViteDevServer } from 'vite'
 import { createPageResolver } from './pages'
-import { debug, resolvePath } from './utils'
+import { debug, resolvePath, slash } from './utils'
 import { MODULE_ID_VIRTUAL } from './constants'
 import { resolveOptions } from './options'
 import { setupWatcher } from './watcher'
@@ -33,11 +33,14 @@ export class Context {
   routes: RouteResolver
 
   constructor(viteRoot: string, userOptions: UserOptions) {
-    this.root = viteRoot || resolvePath(process.cwd())
+    const root = viteRoot || resolvePath(process.cwd())
+
+    this.root = slash(root)
     this.options = resolveOptions(this.root, userOptions)
     this.pages = createPageResolver(this)
     this.routes = createRouteResolver(this)
 
+    debug.env(this.root)
     debug.options(this.options)
   }
 

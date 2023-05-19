@@ -43,12 +43,8 @@ function VueRoutesGeneratePlugin(userOptions: UserOptions = {}): Plugin {
         pageId,
       } = parsePageRequest(id)
 
-      if (moduleId === MODULE_ID_VIRTUAL && pageId && MODULE_IDS.includes(pageId)) {
-        return {
-          code: '',
-          map: null,
-        }
-      }
+      if (moduleId === MODULE_ID_VIRTUAL && pageId && MODULE_IDS.includes(pageId))
+        return ctx.routes.injectCode()
 
       if (id === ROUTE_BLOCK_ID_VIRTUAL) {
         return {

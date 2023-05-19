@@ -6,6 +6,12 @@ import VueRoutesGenerate from 'vite-plugin-vue-routes-generate'
 export default defineConfig({
   plugins: [
     Vue(),
-    VueRoutesGenerate(),
+    VueRoutesGenerate({
+      dirs: [
+        'src/pages',
+        'src/layouts',
+      ],
+      extensions: ['vue', 'md', 'page.vue'],
+    }),
   ],
 })

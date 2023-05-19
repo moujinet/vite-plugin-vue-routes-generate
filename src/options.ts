@@ -28,7 +28,7 @@ export function resolveOptions(root: string, userOptions: UserOptions): Resolved
     extensions = ['vue'],
     exclude = ['node_modules', '.git', '**\/__*__\/**'],
     caseSensitive = false,
-    routeBlockLang = 'json5',
+    routeBlockLang = 'json',
     importMode = 'async',
   } = userOptions
 

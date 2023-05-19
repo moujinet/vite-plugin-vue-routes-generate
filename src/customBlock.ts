@@ -6,9 +6,9 @@ import { parse as YAMLParser } from 'yaml'
 import JSON5 from 'json5'
 import type { SFCBlock, SFCDescriptor } from '@vue/compiler-sfc'
 import type { CustomBlock, CustomBlockParser } from './types'
-import { debug } from './utils'
-import { MODULE_ID } from './constants'
 import type { Context } from './context'
+import { MODULE_ID } from './constants'
+import { debug } from './utils'
 
 async function parseSFC(code: string): Promise<SFCDescriptor> {
   try {
@@ -71,7 +71,7 @@ export function createCustomBlockParser(ctx: Context): CustomBlockParser {
   const customBlockMap = new Map<string, CustomBlock>()
 
   return {
-    get: async (path: string) => {
+    get: (path: string) => {
       return customBlockMap.get(path)
     },
     remove: async (path: string) => {

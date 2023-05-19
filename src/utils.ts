@@ -6,6 +6,7 @@ const LEADING_SLASH_RE = /^\//
 const TRAILING_SLASH_RE = /\/$/
 
 export const debug = {
+  env: Debug(`${MODULE_ID}:env`),
   options: Debug(`${MODULE_ID}:options`),
   scan: Debug(`${MODULE_ID}:scan`),
   pages: Debug(`${MODULE_ID}:pages`),
@@ -92,14 +93,10 @@ export function globToRegex(glob: string) {
   return RegExp(`${withNestDirs(dirs)}${withFileName(dirs)}${withExtensions(ext)}`, 'g')
 }
 
-export function normalizeCase(name: string, caseSensitive: boolean) {
-  return caseSensitive ? name : name.toLocaleLowerCase()
-}
-
 export function replaceWithRegex(pattern: RegExp, str: string, replace: string) {
-  if (pattern.test(str))
-    return str.replace(pattern, replace)
-  return str
+  return pattern.test(str)
+    ? str.replace(pattern, replace)
+    : str
 }
 
 export function parseRoutePath(routePath: string) {

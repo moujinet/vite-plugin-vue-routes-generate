@@ -1,6 +1,6 @@
 <template>
   <div>
-    This is A Index Page
+    This is A Catch All Page
   </div>
 </template>
 

@@ -1,10 +1,14 @@
 import { createApp } from 'vue'
+import { createRouter, createWebHistory } from 'vue-router'
 import routes from 'virtual:generated-routes'
 import App from './app.vue'
-
-const app = createApp(App)
 
 // eslint-disable-next-line no-console
 console.log(routes)
 
-app.mount('#app')
+const router = createRouter({
+  routes,
+  history: createWebHistory(),
+})
+
+createApp(App).use(router).mount('#app')

@@ -1,5 +1,3 @@
-import type { ViteDevServer } from 'vite'
-
 export interface UserScanDirOption {
   /**
    * 路由导入文件夹搜索路径
@@ -53,7 +51,7 @@ export interface Options {
   /**
    * 默认的路由标签解析器，<route lang="xxx">
    *
-   * @default 'json5'
+   * @default 'json'
    */
   routeBlockLang: 'json' | 'json5' | 'yaml' | 'yml'
   /**
@@ -73,7 +71,7 @@ export interface ResolvedOptions extends Omit<Options, 'dirs'> {
   dirs: ScanDirOption[]
 }
 
-export interface PathInfo {
+export interface PageInfo {
   /**
    * 文件路径
    */
@@ -84,41 +82,21 @@ export interface PathInfo {
   path: string
 }
 
+export interface PageRouteMeta {
+  layout: string
+  [key: string]: any
+}
+
 export interface PageRoute {
   name: string
   path: string
   component: string
-  children?: PageRoute[]
+  props?: boolean
+  isLayout?: boolean
+  meta?: PageRouteMeta
   customBlock?: CustomBlock
-}
-
-export interface Watcher {
-  update: () => void
-}
-
-export interface Context {
-  /**
-   * 全局配置
-   */
-  options: ResolvedOptions
-  /**
-   * ViteDevServer
-   */
-  server?: ViteDevServer
-  /**
-   * 文件监听器
-   */
-  watcher?: Watcher
-  /**
-   * 提供页面扫描
-   */
-  pages: PageResolver
-  /**
-   * 设置 ViteDevServer
-   *
-   * @param server ViteDevServer
-   */
-  setupViteServer: (server: ViteDevServer) => void
+  children?: PageRoute[]
+  rawPath?: string
 }
 
 export interface PageResolver {
@@ -127,7 +105,7 @@ export interface PageResolver {
    *
    * @param path 页面路径
    */
-  get: (path: string) => PathInfo | undefined
+  get: (path: string) => PageInfo | undefined
   /**
    * 添加页面
    *
@@ -150,7 +128,7 @@ export interface PageResolver {
   /**
    * 获取所有页面数组
    */
-  toArray: () => PathInfo[]
+  toArray: () => PageInfo[]
 }
 
 export type CustomBlock = Record<string, any>
@@ -160,6 +138,10 @@ export interface RouteResolver {
    * 自定义标签解析器
    */
   customBlock: CustomBlockParser
+  /**
+   * 生成路由数组
+   */
+  resolveRoutes: () => Promise<PageRoute[]>
   /**
    * 检查路由更新
    *
@@ -178,7 +160,7 @@ export interface CustomBlockParser {
    *
    * @param path 文件路径
    */
-  get: (path: string) => Promise<CustomBlock | undefined>
+  get: (path: string) => CustomBlock | undefined
   /**
    * 删除指定文件的路由标签
    *

@@ -1,7 +1,7 @@
 import fg from 'fast-glob'
 import type {
+  PageInfo,
   PageResolver,
-  PathInfo,
   ScanDirOption,
 } from './types'
 import {
@@ -9,24 +9,17 @@ import {
   debug,
   globToRegex,
   joinPath,
-  normalizeCase,
-  parseRoutePath,
   resolvePath,
 } from './utils'
 import type { Context } from './context'
 
 export function createPageResolver(ctx: Context): PageResolver {
-  const pages = new Map<string, PathInfo>()
+  const pages = new Map<string, PageInfo>()
 
-  function asPathInfo(file: string, dir: ScanDirOption): PathInfo {
+  function asPageInfo(file: string, dir: ScanDirOption): PageInfo {
     const RE = globToRegex(joinPath(dir.src, dir.filePattern).replace(ctx.root, ''))
     const matched = file.replace(ctx.root, '').match(RE) || []
-
-    let path = joinPath(dir.prefix || '', ...matched)
-    path = normalizeCase(
-      parseRoutePath(path),
-      ctx.options.caseSensitive,
-    )
+    const path = joinPath(dir.prefix || '', ...matched)
 
     return { file, path }
   }
@@ -39,8 +32,8 @@ export function createPageResolver(ctx: Context): PageResolver {
    */
   async function add(path: string, dir: ScanDirOption) {
     debug.pages('add', path.replace(ctx.root, ''))
-    pages.set(path, asPathInfo(path, dir))
-    ctx.routes.checkUpdate(path)
+    pages.set(path, asPageInfo(path, dir))
+    await ctx.routes.checkUpdate(path)
   }
 
   /**
@@ -51,7 +44,7 @@ export function createPageResolver(ctx: Context): PageResolver {
   async function remove(path: string) {
     debug.pages('remove', path.replace(ctx.root, ''))
     pages.delete(path)
-    ctx.routes.customBlock.remove(path)
+    await ctx.routes.customBlock.remove(path)
   }
 
   /**
