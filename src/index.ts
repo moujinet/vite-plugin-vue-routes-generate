@@ -3,8 +3,9 @@ import type { UserOptions } from './types'
 import { Context } from './context'
 import {
   MODULE_ID,
-  MODULE_IDS,
   MODULE_ID_VIRTUAL,
+  ROUTES_IDS,
+  ROUTES_META_IDS,
   ROUTE_BLOCK_ID_VIRTUAL,
   ROUTE_BLOCK_RE,
 } from './constants'
@@ -28,7 +29,7 @@ function VueRoutesGeneratePlugin(userOptions: UserOptions = {}): Plugin {
     },
 
     resolveId(id) {
-      if (MODULE_IDS.includes(id))
+      if ([...ROUTES_IDS, ...ROUTES_META_IDS].includes(id))
         return `${MODULE_ID_VIRTUAL}?id=${id}`
 
       if (ROUTE_BLOCK_RE.test(id))
@@ -43,8 +44,14 @@ function VueRoutesGeneratePlugin(userOptions: UserOptions = {}): Plugin {
         pageId,
       } = parsePageRequest(id)
 
-      if (moduleId === MODULE_ID_VIRTUAL && pageId && MODULE_IDS.includes(pageId))
-        return ctx.routes.injectCode()
+      if (moduleId === MODULE_ID_VIRTUAL && pageId) {
+        // ~routes
+        if (ROUTES_IDS.includes(pageId))
+          return ctx.routes.getClientCode()
+        // ~routes/meta
+        if (ROUTES_META_IDS.includes(pageId))
+          return ctx.routes.getRoutesMeta()
+      }
 
       if (id === ROUTE_BLOCK_ID_VIRTUAL) {
         return {

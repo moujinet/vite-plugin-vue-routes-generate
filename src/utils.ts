@@ -1,6 +1,6 @@
 import { resolve } from 'node:path'
 import Debug from 'debug'
-import { MODULE_ID } from './constants'
+import { DYNAMIC_ROUTE_RE, MODULE_ID } from './constants'
 
 const LEADING_SLASH_RE = /^\//
 const TRAILING_SLASH_RE = /\/$/
@@ -99,6 +99,23 @@ export function replaceWithRegex(pattern: RegExp, str: string, replace: string) 
     : str
 }
 
+export function normalizeName(path: string) {
+  return trimSlash(
+    path.replace(DYNAMIC_ROUTE_RE, '$1'),
+    'left',
+  )
+    .replace(/^\.{3}/, '')
+    .replace(/\//g, '.')
+}
+
+export function normalizeCase(name: string, caseSensitive: boolean) {
+  return caseSensitive ? name : name.toLocaleLowerCase()
+}
+
+export function normalizePath(path: string) {
+  return parseRoutePath(path)
+}
+
 export function parseRoutePath(routePath: string) {
   let path = routePath
 
@@ -126,4 +143,8 @@ export function parsePageRequest(id: string) {
     query,
     pageId,
   }
+}
+
+export function isMarkdown(file: string): boolean {
+  return /\.(md|markdown)$/.test(file)
 }

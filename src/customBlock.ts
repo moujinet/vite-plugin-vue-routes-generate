@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs'
 import colors from 'picocolors'
 import deepEqual from 'deep-equal'
+import matter from 'gray-matter'
 import { importModule } from 'local-pkg'
 import { parse as YAMLParser } from 'yaml'
 import JSON5 from 'json5'
@@ -8,7 +9,7 @@ import type { SFCBlock, SFCDescriptor } from '@vue/compiler-sfc'
 import type { CustomBlock, CustomBlockParser } from './types'
 import type { Context } from './context'
 import { MODULE_ID } from './constants'
-import { debug } from './utils'
+import { debug, isMarkdown } from './utils'
 
 async function parseSFC(code: string): Promise<SFCDescriptor> {
   try {
@@ -56,8 +57,25 @@ function parseRouteBlock(block: SFCBlock, path: string, ctx: Context) {
   }
 }
 
+function parseMarkdownBlock(content: string, path: string, ctx: Context) {
+  debug.routeBlock(`${colors.blue('Markdown')} parser -> ${path.replace(ctx.root, '')}`)
+
+  try {
+    const { data } = matter(content)
+    return { meta: data }
+  }
+  catch (err: any) {
+    throw new Error(`Invalid YAML format of Markdown content in ${path}\n${err.message}`)
+  }
+}
+
 async function getRouteBlock(path: string, ctx: Context) {
   const content = readFileSync(path, 'utf-8')
+
+  // Support Markdown Files
+  if (isMarkdown(path))
+    return parseMarkdownBlock(content, path, ctx)
+
   const parsedSFC = await parseSFC(content)
   const blockStr = parsedSFC?.customBlocks.find(b => b.type === 'route')
 

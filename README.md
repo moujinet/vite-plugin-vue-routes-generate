@@ -1,8 +1,10 @@
 # vite-plugin-vue-routes-generate
 
-[![NPM version](https://img.shields.io/npm/v/unplugin-vue-router?color=black&label=)](https://www.npmjs.com/package/unplugin-vue-router) [![ci status](https://github.com/posva/unplugin-vue-router/actions/workflows/ci.yml/badge.svg)](https://github.com/posva/unplugin-vue-router/actions/workflows/ci.yml)
+[![NPM version](https://img.shields.io/npm/v/vite-plugin-vue-routes-generate?color=black&label=)](https://www.npmjs.com/package/vite-plugin-vue-routes-generate)
 
-这是一个 `Vite` 插件，它可以从指定目录自动生成 `Vue-Router` 路由，并支持基于 `RouteMeta` 的布局系统。该插件集成了 `vue-plugin-pages` 和 `vue-plugin-vue-layouts` 的功能，并且省去了 `setupLayouts` 步骤，从而简化了创建和配置 `Vue-Router` 路由的流程。
+# 介绍
+
+这是一个 [Vite](https://vitejs.dev) 插件，它可以从指定目录自动生成 [Vue-Router](https://github.com/vuejs/vue-router) 路由，并支持基于 `RouteMeta` 的布局系统。该插件集成了 [vite-plugin-pages](https://github.com/hannoeru/vite-plugin-pages) 和 [vite-plugin-vue-layouts](https://github.com/JohnCampionJr/vite-plugin-vue-layouts) 的功能，并且省去了 [setupLayouts](https://github.com/JohnCampionJr/vite-plugin-vue-layouts#getting-started) 步骤，从而简化了创建和配置 [Vue-Router](https://github.com/vuejs/vue-router) 路由的流程。
 
 ## 开始安装
 
@@ -45,8 +47,8 @@ export default defineConfig({
 ```ts
 import { createApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
-import routes from 'virtual:generated-routes'
 import App from './app.vue'
+import routes from '~routes'
 
 const router = createRouter({
   routes,
@@ -65,6 +67,23 @@ createApp(App).use(router).mount('#app')
     "types": ["vite-plugin-vue-routes-generate/client"]
   }
 }
+```
+
+## ⛺️ 声明布局
+
+在任意插件能够找到的文件中作出以下声明，插件就会将它视为布局。
+
+```vue
+<template>
+  <h1>
+    [Default Layout]
+  </h1>
+  <RouterView />
+</template>
+
+<route lang="yaml">
+layout: true
+</route>
 ```
 
 ## 路由生成
@@ -118,10 +137,6 @@ const routes = [
 
 文件夹名称与文件名称，可以是任意合法的路由名称，像是 `[id]/` 与 `[id].vue`，同样会被看作为嵌套路由。
 
-### 命名路由
-
-默认情况下，名称是使用文件路径生成的。所有具有组件属性的生成路由都将具有 `name` 属性。这样可以避免意外将用户定向到父路由。
-
 ### 动态路由
 
 你基本上可以像使用 [Vue-Router](https://router.vuejs.org/guide/essentials/dynamic-matching.html) 一样使用动态路由，仅需要用 `[]` 把它包上。
@@ -139,7 +154,7 @@ const routes = [
 
 ## `<route>` 标签
 
-默认情况下，`<route>` 标签以 `JSON5` 作为语言，但你也可以使用 `JSON` 及 `YAML`。
+默认情况下，`<route>` 标签以 `JSON` 作为语言，但你也可以使用 `JSON5` 及 `YAML`。
 
 ```vue
 <route>
@@ -156,24 +171,37 @@ meta:
 </route>
 ```
 
-## ⛺️ 声明布局
+# Route 元数据
 
-在任意插件能够找到的组件文件中作出以下声明，插件就会将它视为布局。
+插件支持将生成的路由元数据作为数组导出，可用于调试及基于路由的组件开发。
 
-```vue
-<template>
-  <h1>
-    [Default Layout]
-  </h1>
-  <RouterView />
-</template>
+## 如何使用
 
-<route lang="yaml">
-layout: true
-</route>
+```ts
+import routesMeta from '~routes/meta'
+
+/**
+ * RouteMeta
+ *
+ * [
+ *   {
+ *     name: 'foo.name',
+ *     path: '/foo/:name',
+ *     file: '/src/pages/foo/[name].vue',
+ *
+ * ⇣ -- CustomBlock/Frontmatter -- ⇣
+ *
+ *     layout: 'default',
+ *     title: 'Title',
+ *     tags: ['foo', 'bar'],
+ *   }
+ * ]
+ */
+console.log(routesMeta)
 ```
 
-## 插件配置
+
+# 插件配置
 
 默认配置下，插件也可以完整的支持 `路由生成` 和 `布局系统`，同时也可以根据需要自定义配置。
 
@@ -188,14 +216,14 @@ export default {
 }
 ```
 
+---
+
 ### dirs
 
-- **类型:** `string` | `string[]` | `RoutesPathOption[]`
+- **类型:** `string` | `string[]` | `UserScanDirOption[]`
 - **默认:** `src/pages`
 
 routes 导入目录，支持 `globs`。
-
-**注意: 路径必须去掉路径前后的 `/`**
 
 ```ts
 // vite.config.ts
@@ -207,13 +235,14 @@ export default {
       dirs: [
         // src/pages/about.vue ⇢ /about
         'src/pages',
-        // src/docs/guide/pages/intro.vue ⇢ /docs/guide/intro
-        { src: 'src/docs/**/pages', prefix: 'docs/' },
+        // src/docs/intro.vue ⇢ /docs/intro
+        { src: 'src/docs', prefix: 'docs/' },
         // src/components/layout/docs/index.md ⇢ /component/layout
+        // src/components/layout/docs/summary.md ⇢ /component/layout/summary
         {
-          src: 'src/components/**/docs',
+          src: 'src/components',
           prefix: 'component/',
-          filePattern: '**/*.md', // 全局 extensions 将会失效
+          filePattern: '**/docs/**/*.md', // 全局 extensions 将会失效
         },
       ]
     }),
@@ -222,10 +251,10 @@ export default {
 ```
 
 <details>
-<summary><b>PathOption 类型定义</b></summary><br>
+<summary><b>UserScanDirOption 类型定义</b></summary><br>
 
 ```ts
-export interface PathOption {
+export interface UserScanDirOption {
   /**
    * 路由导入文件夹搜索路径
    */
@@ -239,10 +268,17 @@ export interface PathOption {
   /**
    * 文件过滤条件
    */
-  filePattern?: string | string[]
+  filePattern?: string
 }
 ```
 </details>
+
+### defaultLayout
+
+- **类型:** `false` | `string`
+- **默认:** `false`
+
+默认布局，缺省值为 `false` 即不使用布局。
 
 ### extensions
 
@@ -253,7 +289,7 @@ export interface PathOption {
 
 ### exclude
 
-- **类型:** `FilterPattern`
+- **类型:** `string[]`
 - **默认:** `['node_modules', '.git', '**/__*__/**']`
 
 全局排除条件
@@ -262,7 +298,7 @@ export interface PathOption {
 src/pages/
   ├── users/
   │  ├── components
-  │  │  └── form.vue
+  │  │  └── form.vue // Excluded
   │  ├── [id].vue
   │  └── index.vue
   └── home.vue
@@ -288,15 +324,6 @@ export default {
 
 默认情况下，所有路由都是懒加载的方式导入。
 
-### routeNameSeparator
-
-- **类型:** `string`
-- **默认:** `-`
-
-连接路由名称的分割符。
-
-- `src/pages/TheRouteName.vue` ⇢ `/the-route-name`
-
 ### caseSensitive
 
 - **类型:** `boolean`
@@ -305,15 +332,15 @@ export default {
 默认情况下，所有路由是不区分大小写的，并且将统一转换为小写字符的路径。
 
 - **caseSensitive: true** 
-  - `src/pages/TheRouteName.vue` ⇢ `/The-Route-Name`
+  - `src/pages/The-Route-Name.vue` ⇢ `/The-Route-Name`
 - **caseSensitive: false** 
-  - `src/pages/TheRouteName.vue` ⇢ `/the-route-name`
+  - `src/pages/The-Route-Name.vue` ⇢ `/the-route-name`
 
 ### routeBlockLang
 
 - **类型:** `'json5'` | `'json'` | `'yaml'` | `'yml'`
 - **默认:** `json5`
-
+s
 ---
 
 [LICENSE (MIT)](/LICENSE)

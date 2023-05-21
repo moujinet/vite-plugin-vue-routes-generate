@@ -1,4 +1,4 @@
-import type { PageRoute, ResolvedOptions } from './types'
+import type { PageRoute, PageRouteMeta, ResolvedOptions } from './types'
 
 function stringifyRoutes(routes: PageRoute[], options: ResolvedOptions) {
   const importMap = new Map<string, string>()
@@ -68,4 +68,8 @@ function stringifyRoutes(routes: PageRoute[], options: ResolvedOptions) {
 export function generateClientCode(_routes: PageRoute[], options: ResolvedOptions) {
   const { imports, routes } = stringifyRoutes(_routes, options)
   return `${imports.join(';\n')}\n\nconst routes = ${routes};\n\nexport default routes;`
+}
+
+export function generateClientRouteMeta(routesMap: PageRouteMeta[]) {
+  return `const routesMap = ${JSON.stringify(routesMap)};\n\nexport default routesMap;`
 }

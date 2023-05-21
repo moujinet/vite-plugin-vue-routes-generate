@@ -2,32 +2,12 @@ import { DYNAMIC_ROUTE_RE } from './constants'
 import type { Context } from './context'
 import type { PageRoute, RouteResolver } from './types'
 import { createCustomBlockParser } from './customBlock'
-import { parseRoutePath, trimSlash } from './utils'
-import { generateClientCode } from './clientCode'
+import { normalizeCase, normalizeName, normalizePath } from './utils'
+import { generateClientCode, generateClientRouteMeta } from './clientCode'
+import { resolveRoutesMeta } from './meta'
 
 export function createRouteResolver(ctx: Context): RouteResolver {
   const customBlockParser = createCustomBlockParser(ctx)
-
-  function normalizeName(path: string) {
-    return trimSlash(
-      path.replace(DYNAMIC_ROUTE_RE, '$1'),
-      'left',
-    )
-      .replace(/^\.{3}/, '')
-      .replace(/\//g, '.')
-  }
-
-  function normalizeCase(name: string, caseSensitive: boolean) {
-    return caseSensitive ? name : name.toLocaleLowerCase()
-  }
-
-  function normalizePath(path: string) {
-    return normalizeCase(parseRoutePath(path), ctx.options.caseSensitive)
-  }
-
-  function normalizeComponent(path: string) {
-    return path
-  }
 
   function prepareRoutes(routes: PageRoute[], parent?: PageRoute): PageRoute[] {
     for (const route of routes) {
@@ -57,9 +37,9 @@ export function createRouteResolver(ctx: Context): RouteResolver {
       const isLayout = customBlock?.layout === true
       const isDynamicRoute = DYNAMIC_ROUTE_RE.test(page.path)
 
-      const name = normalizeName(page.path)
-      const component = normalizeComponent(page.file)
-      const path = normalizePath(page.path)
+      const name = customBlock?.name || normalizeName(page.path)
+      const component = page.file.replace(ctx.root, '')
+      const path = normalizePath(normalizeCase(page.path, ctx.options.caseSensitive))
       const meta = customBlock?.meta
         ? { layout: ctx.options.defaultLayout, ...customBlock.meta }
         : { layout: ctx.options.defaultLayout }
@@ -104,10 +84,15 @@ export function createRouteResolver(ctx: Context): RouteResolver {
     await customBlockParser.checkUpdate(path)
   }
 
-  async function injectCode() {
+  async function getClientCode() {
     const routes = await resolveRoutes()
     const client = generateClientCode(routes, ctx.options)
+    return client
+  }
 
+  async function getRoutesMeta() {
+    const routesMeta = await resolveRoutesMeta(ctx)
+    const client = generateClientRouteMeta(routesMeta)
     return client
   }
 
@@ -115,6 +100,7 @@ export function createRouteResolver(ctx: Context): RouteResolver {
     customBlock: customBlockParser,
     resolveRoutes,
     checkUpdate,
-    injectCode,
+    getClientCode,
+    getRoutesMeta,
   }
 }

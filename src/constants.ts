@@ -1,6 +1,10 @@
-export const MODULE_IDS = [
+export const ROUTES_IDS = [
   '~routes',
-  'virtual:generated-routes',
+  // 'virtual:generated-routes',
+]
+export const ROUTES_META_IDS = [
+  '~routes/meta',
+  // 'virtual:generated-routes/meta',
 ]
 
 export const MODULE_ID = 'vite-plugin-vue-routes-generate'

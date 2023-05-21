@@ -83,7 +83,6 @@ export interface PageInfo {
 }
 
 export interface PageRouteMeta {
-  layout: string
   [key: string]: any
 }
 
@@ -149,9 +148,13 @@ export interface RouteResolver {
    */
   checkUpdate: (path: string) => Promise<void>
   /**
-   * 获取路由注入代码
+   * 获取客户端路由代码
    */
-  injectCode: () => Promise<string>
+  getClientCode: () => Promise<string>
+  /**
+   * 获取路由元信息
+   */
+  getRoutesMeta: () => Promise<string>
 }
 
 export interface CustomBlockParser {
