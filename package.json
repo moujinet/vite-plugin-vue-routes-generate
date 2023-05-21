@@ -48,9 +48,7 @@
     "test": "vitest",
     "release": "bumpp --commit --push --tag && pnpm publish",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit",
-    "up": "taze major -I",
-    "postinstall": "npx simple-git-hooks"
+    "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
     "@vue/compiler-sfc": "^2.7.0 || ^3.0.0",
