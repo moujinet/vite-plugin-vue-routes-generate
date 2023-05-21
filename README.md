@@ -339,7 +339,7 @@ export default {
 ### routeBlockLang
 
 - **类型:** `'json5'` | `'json'` | `'yaml'` | `'yml'`
-- **默认:** `json5`
+- **默认:** `json`
 s
 ---
 
