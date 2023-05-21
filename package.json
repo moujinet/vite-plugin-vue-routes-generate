@@ -1,6 +1,6 @@
 {
   "name": "vite-plugin-vue-routes-generate",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "packageManager": "pnpm@8.5.1",
   "description": "A Vite plugin for generate Vue-Router routes based on filesystem, complete with router-based layout system.",
   "author": "Allen Luo <luoyi@mouji.net>",
