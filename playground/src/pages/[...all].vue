@@ -7,7 +7,7 @@
 <route>
 {
   "meta": {
-    "layout": "default"
+    "layout": "404"
   }
 }
 </route>

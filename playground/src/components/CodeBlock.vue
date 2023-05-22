@@ -6,7 +6,7 @@ defineOptions({
 
 <template>
   <div bg-dark-1 rounded-2 overflow-hidden>
-    <div flex="~ items-center" h-10 bg-dark-4>
+    <div flex="~ items-center" h-10 bg-dark-3>
       <div flex="~ items-center gap-1" ml-4>
         <div rounded-full h-3 w-3 bg-red-400 />
         <div rounded-full h-3 w-3 bg-yellow-500 />

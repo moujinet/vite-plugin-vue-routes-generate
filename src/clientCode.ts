@@ -31,31 +31,29 @@ function stringifyRoutes(routes: PageRoute[], options: ResolvedOptions) {
     })
   }
 
-  function getFinalRoutes(layouts: PageRoute[], pages: PageRoute[]) {
-    const root = layouts
-
-    pages.forEach((page) => {
+  function getFinalRoutes(pages: PageRoute[], layouts: PageRoute[]) {
+    return pages.map((page) => {
       if (page.meta?.layout || options.defaultLayout) {
         const layout = layouts.find((layout) => {
           return layout.name === (page.meta?.layout || options.defaultLayout)
         })
 
         if (layout) {
-          layout.children = layout.children || []
-          layout.children.push(page)
+          return {
+            path: page.path,
+            component: layout.component,
+            children: page.path === '/' ? [page] : [{ ...page, path: '' }],
+          }
         }
       }
-      else {
-        root.push(page)
-      }
-    })
 
-    return root
+      return page
+    })
   }
 
   const layouts = filterRoutes(routes, true) || []
   const pages = filterRoutes(routes, false)
-  const finalRoutes = getFinalRoutes(layouts, pages)
+  const finalRoutes = getFinalRoutes(pages, layouts)
   const imports = Array.from(importMap).map(args => getImportCode(...args))
 
   return {
